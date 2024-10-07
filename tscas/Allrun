@@ -1,0 +1,24 @@
+#!/bin/sh
+set -e
+cd ${0%/*} || exit 1                        # Run from this directory
+. $WM_PROJECT_DIR/bin/tools/RunFunctions    # Tutorial run functions
+
+if [ -z "$AMRLB_PROJECT" ]; then
+    echo "AMRLB_PROJECT not set. Please set it to the root of the blastAMR repository."
+    echo "For example, for blastAMR tutorials:"
+    echo 'export AMRLB_PROJECT=$(git rev-parse --show-toplevel)'
+    exit 1
+fi
+export FOAM_CODE_TEMPLATES=$AMRLB_PROJECT/etc/codeTemplates/dynamicCode
+cp -rT 0.orig 0
+runApplication blockMesh
+runApplication ./balance_nprocs.py
+maxRef=$(foamDictionary -entry maxRefinement -value constant/dynamicMeshDict)
+for i in $(seq 1 $maxRef); do
+    runApplication -a updateMesh -overwrite
+    #runApplication -a topoSet -overwrite
+done
+cp -rT 0/polyMesh constant/polyMesh
+runApplication decomposePar -constant -cellDist
+runParallel $(getApplication)
+#runParallel redistributePar -reconstruct
