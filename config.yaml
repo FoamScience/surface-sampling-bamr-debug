@@ -1,0 +1,57 @@
+problem:
+  name: TScas
+  template_case: 'tscas'
+  type: 'parameter_variation'
+  models: auto
+  parameters:
+    nProcs:
+      type: choice
+      value_type: int
+      values: [8, 10, 14, 16]
+  scopes:
+    "/system/decomposeParDict":
+      nProcs: "numberOfSubdomains"
+  objectives:
+    isGood:
+      mode: 'shell'
+      command: ['./isGoodCase.sh']
+      threshold: 1
+      minimize: True
+      lower_is_better: True
+
+meta:
+  case_subdirs_to_clone:
+    - balance_nprocs.py
+    - isGoodCase.sh
+    - dynamicCode
+    - constant/triSurface
+    - 0.orig
+  clone_destination: "./trials/"
+  case_run_mode: local
+  case_run_command: ['./Allrun']
+  n_trials: 4
+  n_parallel_trials: 1
+  ttl_trial: 1200
+  init_poll_wait: 60
+  poll_factor: 1.5
+  timeout: 10
+  use_saasbo: False
+  n_pareto_points: 0
+  stopping_strategy:
+    improvement_bar: 1e-2
+    min_trials: 25
+    window_size: 10
+
+# The following sections are irrelevant
+
+validate:
+  cross_validate: False
+
+visualize:
+  update_interval: 1200
+  n_figures: 2
+  zscore_bar: 15
+  figure_generator: ['./getImage.sh']
+  graph_height: 400
+  host: '0.0.0.0'
+  port: 8888
