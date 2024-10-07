@@ -1,0 +1,8 @@
+*json
+*csv
+outputs
+trials/TScas*
+tscas/0.orig/polyMesh
+tscas/constant/cellDist
+tscas/0.orig/uniform
+.venv
